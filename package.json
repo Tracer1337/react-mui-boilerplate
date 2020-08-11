@@ -1,0 +1,17 @@
+{
+  "name": "react-mui-boilerplate",
+  "version": "1.0.0",
+  "description": "",
+  "bin": {
+    "react-mui-boilerplate": "./index.js"
+  },
+  "files": [
+    "scripts/*"
+  ],
+  "keywords": [],
+  "author": "Merlin Moelter",
+  "license": "ISC",
+  "dependencies": {
+    "@m.moelter/task-runner": "^1.0.1"
+  }
+}
