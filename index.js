@@ -6,7 +6,7 @@ const { program } = require("commander")
 const { makeRunnable, exec, run } = require("@m.moelter/task-runner")
 
 program
-    .options("-r, --remote", "git remote, where the new repo will be pushed to")
+    .option("-r, --remote <url>", "git remote, where the new repo will be pushed to")
     .parse(process.argv)
 
 const appName = process.argv[2]
@@ -38,7 +38,7 @@ makeRunnable(async () => {
         fs.rmdirSync(path.join(FOLDER_PATH, ".git"), { recursive: true })
 
         /** 
-         * Replace {APP_NAME} with appName in: package.json, .env, manifest.json, index.html
+         * Replace {APP_NAME} with appName in specified files
          */
         const replaceAppNameInFiles = [
             "boilerplate/package.json",
@@ -95,11 +95,10 @@ makeRunnable(async () => {
      * Install npm packages for client and server
      */
     await run(async () => {
-        return
         await exec("npm install", { skipErrors: true })
 
         await exec("cd client && npm install", { skipErrors: true })
-    }, "Installing npm packages (this may take a while)")
+    }, "Installing packages (this may take a while)")
 
     /**
      * Init git repository (add, commit)
@@ -117,10 +116,10 @@ makeRunnable(async () => {
                 "git push -u origin master"
             ], { skipErrors: true })
         }
-    }, "Initializing git")
+    }, "Setting up git")
 
     /**
-     * Open VSCode in the new folder (command "code <folder>")
+     * Open VSCode in the new folder (command "code .")
      */
-    await exec("code .", { skipErrors: true })
+    await exec("code .")
 })()

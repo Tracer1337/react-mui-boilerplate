@@ -1,14 +1,27 @@
 {
   "name": "react-mui-boilerplate",
   "version": "1.0.0",
-  "description": "",
+  "description": "React boilerplate with material ui and an express backend",
   "bin": {
     "react-mui-boilerplate": "./index.js"
   },
   "files": [
     "scripts/*"
   ],
-  "keywords": [],
+  "keywords": [
+    "boilerplate",
+    "react",
+    "material",
+    "express"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tracer1337/react-mui-boilerplate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Tracer1337/react-mui-boilerplate/issues"
+  },
+  "homepage": "https://github.com/Tracer1337/react-mui-boilerplate",
   "author": "Merlin Moelter",
   "license": "ISC",
   "dependencies": {
