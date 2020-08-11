@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@m.moelter/task-runner": "^1.0.1",
     "bcrypt": "^5.0.0",
     "chalk": "^4.1.0",
     "cli-progress": "^3.8.2",
@@ -26,13 +27,12 @@
     "express": "^4.17.1",
     "http-proxy-middleware": "^1.0.5",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.27.0",
     "mysql": "^2.18.1",
     "node-ssh": "^10.0.2",
-    "opn": "^6.0.0",
+    "open": "^7.1.0",
     "uuid": "^8.2.0",
-    "xlsx": "^0.16.4",
-    "@m.moelter/task-runner": "^1.0.1",
-    "moment": "^2.27.0"
+    "xlsx": "^0.16.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"

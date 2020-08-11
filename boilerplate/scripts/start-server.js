@@ -1,5 +1,5 @@
 const path = require("path")
-const open = require("opn")
+const open = require("open")
 require("dotenv").config({ path: path.join(__dirname, "..", ".env") })
 
 // Open browser on port
