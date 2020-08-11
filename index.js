@@ -2,7 +2,12 @@
 
 const fs = require("fs")
 const path = require("path")
+const { program } = require("commander")
 const { makeRunnable, exec, run } = require("@m.moelter/task-runner")
+
+program
+    .options("-r, --remote", "git remote, where the new repo will be pushed to")
+    .parse(process.argv)
 
 const appName = process.argv[2]
 
@@ -27,12 +32,12 @@ makeRunnable(async () => {
     await run(async () => {
         /**
          * Move into new folder and remove .git folder
-         */
+         */ 
         process.chdir(appName)
 
         fs.rmdirSync(path.join(FOLDER_PATH, ".git"), { recursive: true })
 
-        /**
+        /** 
          * Replace {APP_NAME} with appName in: package.json, .env, manifest.json, index.html
          */
         const replaceAppNameInFiles = [
@@ -65,18 +70,18 @@ makeRunnable(async () => {
         /**
          * Remove all files / folders but boilerplate/ from the new folder
          */
-        const shouldDeleteFiles = fs.readdirSync(FOLDER_PATH).filter(filename => filename !== "boilerplate")
+        const deleteFiles = fs.readdirSync(FOLDER_PATH).filter(filename => filename !== "boilerplate")
 
-        for (let filename of shouldDeleteFiles) {
+        for (let filename of deleteFiles) {
             fs.unlinkSync(path.join(FOLDER_PATH, filename))
         }
 
         /**
          * Move all contents from boilerplate/ out of the folder and delete boilerplate folder
          */
-        const shouldMoveFiles = fs.readdirSync(path.join(FOLDER_PATH, "boilerplate"))
+        const moveFiles = fs.readdirSync(path.join(FOLDER_PATH, "boilerplate"))
 
-        for (let filepath of shouldMoveFiles) {
+        for (let filepath of moveFiles) {
             const oldPath = path.join(FOLDER_PATH, "boilerplate", filepath)
             const newPath = path.join(FOLDER_PATH, filepath)
 
@@ -90,10 +95,11 @@ makeRunnable(async () => {
      * Install npm packages for client and server
      */
     await run(async () => {
-        await exec("npm install")
+        return
+        await exec("npm install", { skipErrors: true })
 
-        await exec("cd client && npm install")
-    }, "Installing npm packages")
+        await exec("cd client && npm install", { skipErrors: true })
+    }, "Installing npm packages (this may take a while)")
 
     /**
      * Init git repository (add, commit)
@@ -104,25 +110,17 @@ makeRunnable(async () => {
             "git add .",
             "git commit -m \"First commit\""
         ], { skipErrors: true })
+
+        if (program.remote) {
+            await exec([
+                `git remote add origin ${program.remote}`,
+                "git push -u origin master"
+            ], { skipErrors: true })
+        }
     }, "Initializing git")
-
-    // Prompt the user for a git remote
-
-    // If given
-
-        // Push to remote
 
     /**
      * Open VSCode in the new folder (command "code <folder>")
      */
-    await run(async () => {
-        await exec("code .", { skipErrors: true })
-    }, "Opening VSCode")
-
-    /**
-     * Start development server
-     */
-    await run(async () => {
-        await exec("npm run start")
-    })
+    await exec("code .", { skipErrors: true })
 })()

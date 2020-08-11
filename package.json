@@ -12,6 +12,7 @@
   "author": "Merlin Moelter",
   "license": "ISC",
   "dependencies": {
-    "@m.moelter/task-runner": "^1.0.1"
+    "@m.moelter/task-runner": "^1.0.1",
+    "commander": "^6.0.0"
   }
 }
