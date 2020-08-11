@@ -1,12 +1,12 @@
 {
   "name": "react-mui-boilerplate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React boilerplate with material ui and an express backend",
   "bin": {
     "react-mui-boilerplate": "./index.js"
   },
   "files": [
-    "scripts/*"
+    "index.js"
   ],
   "keywords": [
     "boilerplate",
