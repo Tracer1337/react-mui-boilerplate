@@ -1,6 +1,6 @@
 # React Mui Boilerplate
 
-A powerfull boilerplate for using react with material-ui in the frontend and express in the backend. Redux, react-redux and react-router-dom are also preinstalled.
+A powerful boilerplate for using react with material-ui in the frontend and express in the backend. Redux, react-redux and react-router-dom are also preinstalled.
 
 ### Quick Start
 
