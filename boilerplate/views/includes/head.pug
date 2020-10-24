@@ -1,0 +1,19 @@
+mixin head(title)
+    doctype html
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+
+        // SEO
+        meta(name='author' content='My')
+        meta(name='description' content='My Website')
+
+        meta(property='og:title' content='Website')
+        meta(property='og:description' content='My Website')
+        meta(property='og:image' content='https://www.google.com')
+        meta(property='og:site_name' content='Website')
+        meta(property='og:type' content='Website')
+
+        link(rel='icon' href='images/favicon.ico')
+
+        title=title

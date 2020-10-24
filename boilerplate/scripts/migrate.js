@@ -1,81 +1,57 @@
 const fs = require("fs")
 const path = require("path")
 const chalk = require("chalk")
-const { performance } = require("perf_hooks")
+const { makeRunnable, run } = require("@m.moelter/task-runner")
 require("dotenv").config({ path: path.join(__dirname, "..", ".env") })
 
-const { createConnectionAsync } = require("../database")
+const { queryAsync } = require("../app/utils")
+const createConnection = require("../database")
+const StorageFacade = require("../app/Facades/StorageFacade.js")
 
-const MIGRATIONS_DIR = path.join(__dirname, "..", "database", "migrations")
+const ROOT_DIR = path.join(__dirname, "..")
+const MIGRATIONS_DIR = path.join(ROOT_DIR, "database", "migrations")
 
-let db
+const runnable = makeRunnable(async () => {
+    // Require migrations from migrations folder
+    const migrations = (await fs.promises.readdir(MIGRATIONS_DIR)).map(filename => require(path.join(MIGRATIONS_DIR, filename)))
 
-// Run db.query promise-based
-function asyncQuery(query) {
-    return new Promise((resolve) => {
-        db.query(query, (error) => {
-            if(error) throw error
-            resolve()
-        })
-    })
-}
+    await run(async () => {
+        const reversedMigrations = [...migrations].reverse()
+        const query = `DROP TABLE IF EXISTS ${reversedMigrations.map(migration => migration.table).filter(e => e).join(",")}`
+        await queryAsync(query)
+    }, "Removing tables")
+
+    await run(async () => {
+        await Promise.all([
+            StorageFacade.clearStorage(),
+            StorageFacade.clearLocalStorage()
+        ])
+    }, "Removing files")
+
+    for (let migration of migrations) {
+        if (!migration.columns) {
+            continue
+        }
+
+        const query = `
+            CREATE TABLE ${migration.table} (
+                ${migration.columns.join(",\n")}
+            );
+        `
+
+        await run(async () => await queryAsync(query), "Creating table: " + chalk.bold(migration.table))
+    }
+})
 
 ;(async () => {
     // Create database connection
-    db = await createConnectionAsync()
+    global.db = await createConnection()
 
     try {
-        run()
+        await runnable()
     } catch(error) {
         console.error(error)
+    } finally {
         db.end()
     }
 })()
-
-// Run migrations
-function run() {
-    // Get all migration files
-    fs.readdir(MIGRATIONS_DIR, async (error, files) => {
-        if (error) throw error
-
-        // Create migrations array
-        const migrations = files.map(filename => require(path.join(MIGRATIONS_DIR, filename)))
-
-        // Drop all tables
-        console.log(chalk.bold("Remove tables"))
-
-        const reversedMigrations = [...migrations].reverse()
-        const query = `DROP TABLE IF EXISTS ${reversedMigrations.map(migration => migration.table).filter(e => e).join(",")}`
-        await asyncQuery(query)
-
-        const startTime = performance.now()
-        console.log(chalk.bold("Create tables"))
-
-        // Create tables
-        for (let migration of migrations) {
-            if (!migration.columns) {
-                continue
-            }
-
-            console.log("   Creating " + migration.table)
-
-            // Generate query
-            const query = `
-                CREATE TABLE ${migration.table} (
-                    ${migration.columns.join(",\n")}
-                );
-            `
-            
-            // Run query
-            await asyncQuery(query)
-
-            console.log(chalk.green("   Created successfully"))
-        }
-
-        const elapsedTime = Math.floor(performance.now() - startTime)
-        console.log("Executed in " + chalk.cyan(elapsedTime + "ms"))
-
-        // Disconnect from database
-        db.end()
-    })
-}

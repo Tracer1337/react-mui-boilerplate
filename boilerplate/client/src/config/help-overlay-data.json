@@ -1,0 +1,31 @@
+{
+    "default": [
+        {
+            "selector": "#templates-button",
+            "content": "Templates & Stickers"
+        },
+        {
+            "selector": "#textbox-button",
+            "content": "Textbox"
+        },
+        {
+            "selector": "#undo-button",
+            "content": "Undo"
+        }
+    ],
+
+    "elements": [
+        {
+            "selector": "#clone-button",
+            "content": "Clone"
+        },
+        {
+            "selector": "#to-back-button",
+            "content": "To Back"
+        },
+        {
+            "selector": "#to-front-button",
+            "content": "To Front"
+        }
+    ]
+}

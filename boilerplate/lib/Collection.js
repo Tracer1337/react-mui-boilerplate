@@ -46,6 +46,13 @@ class Collection {
     }
 
     /**
+     * Get a random model from the models array
+     */
+    random() {
+        return this.models[Math.floor(Math.random() * this.models.length)]
+    }
+
+    /**
      * Make for ... of loops available
      */
     [Symbol.iterator]() {

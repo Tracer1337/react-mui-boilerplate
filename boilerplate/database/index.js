@@ -14,20 +14,6 @@ function getConnection() {
 
 // Connect to database
 function createConnection() {
-    // Create database connection
-    const connection = getConnection()
-
-    // Connect to database
-    connection.connect((error) => {
-        if (error) throw error
-        console.log(chalk.green("Connected to database"))
-    })
-    
-    return connection
-}
-
-// Connect to database promise-based
-function createConnectionAsync() {
     return new Promise((resolve) => {
         const connection = getConnection()
 
@@ -40,7 +26,4 @@ function createConnectionAsync() {
     })
 }
 
-module.exports = {
-    createConnection,
-    createConnectionAsync
-}
+module.exports = createConnection

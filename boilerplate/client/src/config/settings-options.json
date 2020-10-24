@@ -1,0 +1,33 @@
+{
+    "colors": {
+        "White": "white",
+        "Black": "black",
+        "Green": "#2ecc71",
+        "Red": "#e74c3c",
+        "Blue": "#3498db",
+        "Yellow": "#f1c40f",
+        "Purple": "#9b59b6"
+    },
+
+    "textAlign": {
+        "Left": "left",
+        "Right": "right",
+        "Center": "center"
+    },
+
+    "verticalTextAlign": {
+        "Top": "top",
+        "Bottom": "bottom",
+        "Center": "center"
+    },
+
+    "fontFamilies": {
+        "Impact": "'Impact', fantasy",
+        "Arial": "Arial",
+        "Comic Sans": "'Comic Sans', cursive",
+        "Courier": "'Courier', monospace",
+        "Times New Roman": "'Times New Roman', 'Times', serif"
+    },
+
+    "lineWidth": [2, 5, 10, 20, 30]
+}

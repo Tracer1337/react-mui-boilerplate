@@ -1,53 +1,47 @@
-const jwt = require("jsonwebtoken")
-
 const User = require("../Models/User.js")
-const { queryAsync } = require("../utils")
+const AuthServiceProvider = require("../Services/AuthServiceProvider.js")
 
-// Check for Authorization header and add user attribute to request object
+/**
+ * Convert the given token to a user object
+ */
 async function ProtectMiddleware(req, res, next) {
-    // Break if no Authorization header is set
-    if(!req.header("Authorization")) {
-        res.status(401)
-        res.send("Not authorized")
-        return
+    if (!req.header("Authorization")) {
+        return res.sendStatus(401)
     }
 
-    // Get token from Authorization header
     const token = req.header("Authorization").split(" ")[1]
 
     let userId
-    
+
     try {
-        // Read userId from token
-        userId = await new Promise((resolve, reject) => {
-            jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-                if (error) reject()
-                resolve(decoded.id)
-            })
-        })
+        userId = await AuthServiceProvider.verifyToken(token)
     } catch {
-        // Handle broken token
-        res.status(400)
-        res.send("Invalid auth token")
-        return
+        return res.status(401).send("Invalid token")
     }
 
-    // Get user from database
-    const row = (await queryAsync(`SELECT * FROM users WHERE id = '${userId}'`))[0]
+    const user = await User.findBy("id", userId)
 
-    if(!row) {
-        res.status(400)
-        res.send("Invalid auth token")
-        return
+    if (!user) {
+        return res.status(401).send("Invalid token")
     }
-    
-    // Create user model
-    const user = new User(row)
 
-    // Inject user into request object
+    await user.init()
+
     req.user = user
 
     next()
 }
+
+function Admin(req, res, next) {
+    ProtectMiddleware(req, res, () => {
+        if (!req.user.is_admin) {
+            return res.sendStatus(403)
+        }
+
+        next()
+    })
+}
+
+Object.assign(ProtectMiddleware, { Admin })
 
 module.exports = ProtectMiddleware 

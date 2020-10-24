@@ -1,41 +1,49 @@
 {
-  "name": "{APP_NAME}",
+  "name": "meme-bros",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "concurrently \"npm run start-server\" \"npm run start-client\"",
+    "start": "concurrently -n server,client -c blue,green,yellow npm:start-server npm:start-client",
     "start-server": "node scripts/start-server.js && nodemon server.js",
     "start-client": "cd client && npm run start",
-    "jwt-secret": "node ./scripts/jwt-secret.js",
     "setup-db": "npm run migrate && npm run seed",
     "migrate": "node ./scripts/migrate.js",
     "seed": "node ./scripts/seed.js",
-    "deploy": "node scripts/deploy.js -b"
+    "deploy": "node ./scripts/deploy.js -b",
+    "jwt-secret": "node ./scripts/jwt-secret.js",
+    "create-bucket": "node ./scripts/create-bucket.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@m.moelter/task-runner": "^1.0.1",
+    "http-proxy-middleware": "^1.0.5",
+    "aws-sdk": "^2.743.0",
     "bcrypt": "^5.0.0",
     "chalk": "^4.1.0",
     "cli-progress": "^3.8.2",
     "commander": "^6.0.0",
-    "concurrently": "^5.2.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "http-proxy-middleware": "^1.0.5",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.27.0",
+    "multer": "^1.4.2",
     "mysql": "^2.18.1",
-    "node-ssh": "^10.0.2",
-    "open": "^7.1.0",
-    "uuid": "^8.2.0",
-    "xlsx": "^0.16.4"
+    "pug": "^3.0.0",
+    "sharp": "^0.26.0",
+    "uuid": "^8.2.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "concurrently": "^5.2.0",
+    "ncp": "^2.0.0",
+    "node-ssh": "^10.0.2",
+    "nodemon": "^2.0.4",
+    "open": "^7.2.1",
+    "rimraf": "^3.0.2",
+    "faker": "^5.1.0"
   },
   "nodemonConfig": {
     "ignore": [

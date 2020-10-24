@@ -1,3 +1,9 @@
 node_modules/
 *.pem
 *.log
+.env
+package-lock.json
+
+temp/*
+
+bucket*/

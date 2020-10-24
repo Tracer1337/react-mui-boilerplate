@@ -1,27 +1,15 @@
 require("dotenv").config()
 const express = require("express")
 
-require("./app/utils")
-const { createConnection } = require("./database")
-const routes = require("./routes")
-
-// Connect to database
-global.db = createConnection()
+const boot = require("./app/Boot/Boot.js")
 
 const app = express()
 
-// Support form data
-app.use(express.urlencoded({
-    extended: true
-}))
+;(async () => {
+    await boot(app)
 
-// Support json
-app.use(express.json())
-
-// Use Routes
-app.use("/", routes)
-
-// Start server on port specified in .env
-app.listen(process.env.PORT, () => {
-    console.log("Server is running on port", process.env.PORT)
-})
+    // Start server on port specified in .env
+    app.listen(process.env.PORT, () => {
+        console.log("Server is running on port", process.env.PORT)
+    })
+})()

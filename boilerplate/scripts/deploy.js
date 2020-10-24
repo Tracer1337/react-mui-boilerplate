@@ -7,8 +7,9 @@ require("dotenv").config({ path: path.join(__dirname, "..", ".env") })
 
 const ssh = new NodeSSH()
 const ROOT_DIR = path.join(__dirname, "..")
-const BUILD_DIR = path.join(ROOT_DIR, "client", "build")
-const OUTPUT_DIR = path.join(ROOT_DIR, "public")
+
+const EDITOR_BUILD_DIR = path.join(ROOT_DIR, "client", "", "build")
+const EDITOR_OUTPUT_DIR = path.join(ROOT_DIR, "public", "editor")
 
 program
     .option("-b, --build", "create a new react production build")
@@ -27,9 +28,6 @@ makeRunnable(async () => {
         // Put build into desired destination
         await run(moveBuild, "Put build into desired destination")
     }
-
-    // Push new version to git
-    await run(pushToRemote, "Push new version to git")
 
     // Connect to server via SSH
     await run(connectSSH, "Connect to server")
@@ -50,21 +48,13 @@ async function createBuild() {
 async function moveBuild() {
     try {
         // Remove old react build
-        fs.rmdirSync(OUTPUT_DIR, { recursive: true })
+        fs.rmdirSync(EDITOR_OUTPUT_DIR, { recursive: true })
 
         // Move build to output
-        fs.renameSync(BUILD_DIR, OUTPUT_DIR)
+        fs.renameSync(EDITOR_BUILD_DIR, EDITOR_OUTPUT_DIR)
     } catch (error) {
         throw new Error(error)
     }
-}
-
-async function pushToRemote() {
-    await exec([
-        "git add .",
-        "git commit -m \"Create new build\"",
-        "git push"
-    ], { skipError: true })
 }
 
 async function connectSSH() {
@@ -76,11 +66,15 @@ async function connectSSH() {
 }
 
 async function deploySSH() {
-    const { stderr } = await ssh.execCommand(`sudo git pull && sudo pm2 restart ${process.env.APP_NAME}`, { cwd: `/var/www/${process.env.APP_NAME}` })
+    await ssh.putDirectory(path.join(ROOT_DIR, "public"), `/var/www/${process.env.APP_NAME}/public`, {
+        recursive: true,
+
+        tick: (localPath, remotePath, error) => {
+            if (error) {
+                console.log(error)
+            }
+        }
+    })
 
     ssh.dispose()
-
-    if(stderr && stderr.indexOf("github.com") === -1) {
-        throw new Error(stderr)
-    }
 }
