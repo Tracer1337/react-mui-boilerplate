@@ -29,8 +29,6 @@ for(let [route, router] of routes) {
     rootRouter.use("/" + route, router)
 }
 
-rootRouter.use("/nudes", require("./upload.js"))
-
 /**
  * Serve static files
  */

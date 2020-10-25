@@ -1,10 +1,6 @@
 const { v4: uuid } = require("uuid")
 const moment = require("moment")
 const Model = require("../../lib/Model.js")
-const Template = require("./Template.js")
-const Post = require("./Post.js")
-const StorageFacade = require("../Facades/StorageFacade.js")
-const { queryAsync } = require("../utils/index.js")
 
 class User extends Model {
     constructor(values) {
@@ -21,62 +17,10 @@ class User extends Model {
 
     async init() {
         this.created_at = moment(this.created_at)
-        
+
         if (Buffer.isBuffer(this.is_admin)) {
             this.is_admin = !!this.is_admin[0]
         }
-    }
-
-    async getPosts() {
-        return await Post.findAllBy("user_id", this.id)
-    }
-
-    async getFriends() {
-        const query = `SELECT * FROM friends INNER JOIN users ON friends.to_user_id = users.id WHERE friends.from_user_id = '${this.id}'`
-        const rows = await queryAsync(query)
-        const users = User.fromRows(rows)
-
-        if (users.length) {
-            await users.mapAsync(user => user.init())
-        }
-
-        return users
-    }
-
-    async getTemplates() {
-        return await Template.findAllBy("user_id", this.id)
-    }
-
-    async addFriend(user) {
-        const friends = await this.getFriends()
-
-        if (friends.some(({ id }) => user.id === id)) {
-            return false
-        }
-        
-        const query = `INSERT INTO friends VALUES ('${uuid()}', '${this.id}', '${user.id}', '${moment()}')`
-        await queryAsync(query)
-
-        return true
-    }
-
-    async removeFriend(user) {
-        const friends = await this.getFriends()
-
-        if (!friends.some(({ id }) => user.id === id)) {
-            return false
-        }
-        
-        const query = `DELETE FROM friends WHERE from_user_id = '${this.id}' AND to_user_id = '${user.id}'`
-        await queryAsync(query)
-
-        return true
-    }
-
-    async delete() {
-        await StorageFacade.deleteFile(process.env.AWS_BUCKET_PUBLIC_DIR + "/" + this.avatar_filename)
-
-        return super.delete()
     }
 
     getColumns() {
