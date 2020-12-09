@@ -6,7 +6,7 @@ class User extends Model {
     constructor(values) {
         super({
             table: "users",
-            columns: ["id", "username", "email", "password", "avatar_filename", "created_at", "is_admin"],
+            columns: ["id", "username", "email", "password", "created_at"],
             defaultValues: {
                 id: () => uuid(),
                 created_at: () => moment()
@@ -17,10 +17,6 @@ class User extends Model {
 
     async init() {
         this.created_at = moment(this.created_at)
-
-        if (Buffer.isBuffer(this.is_admin)) {
-            this.is_admin = !!this.is_admin[0]
-        }
     }
 
     getColumns() {
@@ -33,9 +29,7 @@ class User extends Model {
         return {
             id: this.id,
             username: this.username,
-            created_at: this.created_at,
-            avatar_url: this.avatar_filename ? "/upload/" + this.avatar_filename : null,
-            is_admin: this.is_admin
+            created_at: this.created_at
         }
     }
 }

@@ -43,7 +43,7 @@ function serveStaticFiles() {
  */
 if (process.env.NODE_ENV === "development") {
     // Proxy react dev-server
-    rootRouter.use("/editor", createProxyMiddleware({
+    rootRouter.use("/", createProxyMiddleware({
         target: "http://localhost:3000/",
         ws: true
     }))
@@ -52,7 +52,7 @@ if (process.env.NODE_ENV === "development") {
 } else {
     serveStaticFiles()
 
-    rootRouter.get("/*", (req, res) => res.sendFile(path.resolve(ROOT_DIR, "public", "editor", "index.html")))
+    rootRouter.get("/*", (req, res) => res.sendFile(path.resolve(ROOT_DIR, "public", "index.html")))
 }
 
 module.exports = rootRouter
